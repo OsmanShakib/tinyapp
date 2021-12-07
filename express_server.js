@@ -4,10 +4,23 @@ const PORT = 8080;
 
 app.set("view engine", "ejs");
 
+function generateRandomString() {
+    let result           = '';
+    let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charlength = characters.length;
+    for ( let i = 0; i < 6; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charlength));
+   }
+   return result;
+  }
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const bodyParser = require("body-parser");
+
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/", (req, res) => {
   res.send("Hello!");
