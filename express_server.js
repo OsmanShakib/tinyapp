@@ -2,6 +2,12 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 
+
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(cookieParser())
 app.set("view engine", "ejs");
 
 function generateRandomString() {
@@ -17,9 +23,6 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
-
-const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -53,6 +56,19 @@ app.post("/urls", (req, res) => {
   res.redirect(`urls/${shortURL}`);
 });
   
+app.post("/urls/:shortURL", (req, res) => {
+    let shortURL = req.params.shortURL;
+    urlDatabase[shortURL] = req.body.longURL
+    res.redirect("/urls")
+})
+
+app.post("/login", (req, res) => {
+    const username = req.body.Username
+    res.cookie("username", username);
+    res.redirect("/urls")
+})
+
+
 app.post("/urls/:shortURL/delete", (req, res) => {
 let shortURL = req.params.shortURL;
 delete urlDatabase[shortURL]
