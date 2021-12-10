@@ -99,23 +99,60 @@ app.post("/urls/:shortURL", (req, res) => {
 })
 
 
-app.post("/register", (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
-    const id = generateRandomString()
-    users[id] = {
-        password, email, id
+app.post("/register", function(req, res) {
+    let email = req.body.email;
+    let password = req.body.pass;
+  
+    if (!email || email === "" && !password || password == "")
+    { res.sendStatus(400);
     }
-    res.cookie("user_id", id)
-    res.redirect('/urls');
-    console.log(users)
-})
+    else
+    {
+      let match = false;
+      for (let i in users)
+      {
+        if (users[i].email === email)
+          match = true;
+      }
+        if (match)
+        res.sendStatus(400);
+  
+      let id = generateRandomString();
+      console.log(`${email}     ${password}`);
+      users[id] = {id: id,
+                  email: email,
+                  password: password};
+  
+      res.cookie("user_id", id);
+      res.redirect("/urls");
+    }
+  });
 
-app.post("/login", (req, res) => {
-    const username = req.body.Username
-    res.cookie("username", username);
-    res.redirect('/urls')
-})
+  app.post("/login", function(request, response) {
+    let name = request.body.username;
+    let pass = request.body.password;
+    console.log()
+    if (!name || name === "" && !pass || pass == "")
+    {
+      response.status(400).send("Fields Cannot be Empty");
+    }
+    else
+    {
+      for (let i in users)
+      {
+        if (users[i].email === name)
+          if (users[i].password === pass)
+          {
+            response.cookie('user_id', i);
+            response.redirect("/urls");
+          }
+      }
+      response.status(400).send("Login or password is incorrect!");
+  
+  
+  
+    }
+  });
 app.post("/logout", (req, res) => {
     res.clearCookie("username");
     res.redirect('/urls');
@@ -127,6 +164,10 @@ delete urlDatabase[shortURL]
 res.redirect("/urls")
 
 })
+
+app.get("/login", function(req, res) {
+  res.render("login");
+});
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
