@@ -150,7 +150,8 @@ app.post("/register", function(req, res) {
       response.status(400).send("Login or password is incorrect!");
   
   
-  
+    response.cookie('user_id', name);
+   response.redirect("/urls");
     }
   });
 app.post("/logout", (req, res) => {
@@ -165,7 +166,7 @@ res.redirect("/urls")
 
 })
 
-app.get("/login", function(req, res) {
+app.get("/login", (req, res) => {
   res.render("login");
 });
 
