@@ -20,10 +20,13 @@ const users = {
 };
   
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
+const cookiesession = require("cookie-session");
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(cookieParser());
+app.use(cookiesession({
+name: 'session',
+keys: ["Key1", "Key2"],
+}));
 app.set("view engine", "ejs");
 
 const getUserEmail = (email) => {
@@ -70,8 +73,8 @@ app.get("/hello", (req, res) => {
 });
   
 app.get("/urls", (req, res) => {
-  console.log(req.cookies.user_Id);
-  let user = getUserEmail(req.cookies.user_Id);
+  console.log(req.session.user_Id);
+  let user = getUserEmail(req.session.user_Id);
   const templateVars = {
     urls: urlDatabase,
     user ,
@@ -96,7 +99,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies.user_Id;
+  const userId = req.session.user_Id;
   const user = users[userId];
   const templateVars = {
     user,
@@ -138,7 +141,7 @@ app.post("/register", function(req, res) {
 
       // urlDatabase[id] = {};
 
-      res.cookie("user_Id", id)
+      req.session.user_Id = id;
       // console.log(users)
       res.redirect("/urls");
     }
@@ -170,12 +173,12 @@ app.post("/login", (req, res) => {
 
   console.log(user);
 
-  res.cookie("user_Id", user.id);
+  req.session.user_Id = user.id;
   res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const userID = req.cookies["user_Id"];
+  const userID = req.session["user_Id"];
   let shortURL = req.params.shortURL;
   if (userID === urlDatabase[shortURL].userID) {
     delete urlDatabase[shortURL];
