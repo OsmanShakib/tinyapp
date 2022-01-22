@@ -191,7 +191,7 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  res.render("loginForm", {user: null});
+  res.render("login", {user: null});
 });
 
 //go to login page if user exists, if not show error message.
